@@ -21,27 +21,31 @@ public class StripUnicodeNullTransformTest {
                 .field("field1", Schema.STRING_SCHEMA)
                 .field("field2", Schema.STRING_SCHEMA)
                 .field("field3", Schema.STRING_SCHEMA)
+                .field("field4", Schema.STRING_SCHEMA)
                 .build();
 
         Struct inputValue = new Struct(schema)
                 .put("field1", "foo\u0000bar")
                 .put("field2", "baz")
-                .put("field3", "qux\u0000quux");
+                .put("field3", "qux\\u0000quux")
+                .put("field4", "ab\\u0000xy");
 
         Struct expectedValue = new Struct(schema)
                 .put("field1", "foobar")
                 .put("field2", "baz")
-                .put("field3", "quxquux");
+                .put("field3", "quxquux")
+                .put("field4", "abxy");
 
         SinkRecord output = transform.apply(new SinkRecord("", 0, null, null, schema, inputValue, 0));
 
-        assertEquals(expectedValue, output.value());
+        assertEquals(expectedValue.toString(), output.value().toString());
     }
 
     @Test
     public void testTransformWithSelectedFields() {
-        Map<String, String> config = new HashMap<>();
+        Map<String, Object> config = new HashMap<>();
         config.put("fields", "field1,field3");
+        config.put("debug", false);
 
         StripUnicodeNullTransform<SinkRecord> transform = new StripUnicodeNullTransform<>();
         transform.configure(config);
@@ -54,7 +58,7 @@ public class StripUnicodeNullTransformTest {
                 .build();
 
         Struct inputValue = new Struct(schema)
-                .put("field1", "foo\u0000bar")
+                .put("field1", "foo\\u0000bar")
                 .put("field2", "baz")
                 .put("field3", "qux\u0000quux")
                 .put("field4", "a\u0000b");

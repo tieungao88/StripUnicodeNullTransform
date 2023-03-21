@@ -6,7 +6,7 @@
 
     <groupId>io.github.cyberjar09.strip_unicode_null_transform</groupId>
     <artifactId>StripUnicodeNullTransform</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
